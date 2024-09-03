@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Departments_Project.Entities
+namespace Departments_Project.Entities.DTO
 {
-    public class Department
+    public class DepartmentDTO
     {
-        [Key]
+      
         [Required]
         public int DepartmentId { get; set; }
         [Required]
@@ -16,7 +15,6 @@ namespace Departments_Project.Entities
         [Required]
         public string Description { get; set; }
         [Required]
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-        public ICollection<Employee>? Employees { get; set; } = new List<Employee>();
+        public DateTime CreatedDate { get; set; } 
     }
 }

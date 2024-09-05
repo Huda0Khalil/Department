@@ -1,6 +1,12 @@
-﻿using Departments_Project.Entities;
-using Microsoft.AspNetCore.Http;
+﻿using Departments_Project.CQRS.Commands.DepartmentCommand;
+using Departments_Project.CQRS.Commands.EmployeeCommand;
+using Departments_Project.CQRS.Query.DepartmentQuery;
+using Departments_Project.Entities;
+using Departments_Project.Entities.DTO;
+using Departments_Project.Repository.DepartmentRepository;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Departments_Project.Controllers
 {
@@ -8,41 +14,39 @@ namespace Departments_Project.Controllers
     [ApiController]
     public class DepartmentController : ControllerBase
     {
-        ApplicationDbContext context;
-        public DepartmentController(ApplicationDbContext _context)
+        private readonly IMediator _mediator;
+
+        public DepartmentController(IMediator mediator)
         {
-            context = _context;
+          _mediator = mediator;
         }
         [HttpPost]
-        public ActionResult creat(Department department)
-        { 
-            if (department != null)
+        public async Task<ActionResult> CreatDepartment(DepartmentDTO departmentDTO)
+        {
+            CreateDepartmentCommand command = new CreateDepartmentCommand
             {
-                context.departments.Add(department);
-                context.SaveChanges();
-
-            }
-            return Ok(department);
-
+                Description = departmentDTO.Description,
+                Name = departmentDTO.Name,
+               // CreatedDate = DateTime.Now
+            };
+               var departmentId = await _mediator.Send(command);
+                return Ok(departmentId);           
         }
         [HttpGet]
-        public ActionResult read()
+        public async Task<ActionResult> GetAllDepartments()
         {
-            List<Department> departments = context.departments.ToList();
+            //
+            var Query = new GetAllDepartmentQuery(); 
+            List<Department> departments = await _mediator.Send(Query);
             return Ok(departments);
 
         }
         [HttpPut]
-        public ActionResult update(int id, Department department)
+        public async Task<ActionResult> UpdateDepartment(UpdateDepartmentCommand command)
         {
-            Department dep = context.departments.Where(d => d.DepartmentId == id).FirstOrDefault();
-            //if find dep in DB
-            if (dep != null)
-            {
-                dep.Name = department.Name;
-                dep.Description = department.Description;
-                context.departments.Update(dep);
-                context.SaveChanges();
+            //
+            var dep = await _mediator.Send(command);
+            if(dep != null) {
                 return Ok(dep);
             }
             //if didn't find dep in DB
@@ -50,20 +54,12 @@ namespace Departments_Project.Controllers
             
         }
         [HttpDelete]
-        public ActionResult delete(int id)
+        public ActionResult DeleteDepartment(int id)
         {
-            Department dep = context.departments.Where(d => d.DepartmentId == id).FirstOrDefault();
-            //if find dep in DB
-            if (dep != null)
-            {
-                context.departments.Remove(dep);
-                context.SaveChanges();
-                return Ok(dep);
-            }
-            //if didn't find dep in DB
-            return NotFound();
-
-        }
+            var command = new DeleteDepartmentCommand { Id = id };
+            _mediator.Send(command);
+            return Ok();
+         }
     }
 
     

@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Departments_Project.Repository.DepartmentRepository;
+using Departments_Project.Receiver;
+using Departments_Project.Service;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +24,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 builder.Services.AddTransient<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddTransient<IDepartmentRepository, DepartmentRepository>();
+// Register AutoMapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddHostedService<RabbitMqListenerService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

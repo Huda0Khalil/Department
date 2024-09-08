@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 using Manage_Employee_Data.DTO;
 using System.Xml.Linq;
+using Manage_Employee_Data.Send;
 
 namespace Manage_Employee_Data.Controllers
 {
@@ -12,7 +13,14 @@ namespace Manage_Employee_Data.Controllers
     [ApiController]
     public class UploadDocumentsController : ControllerBase
     {
+        private readonly RabbitMqSenderService _rabbitMqSenderService;
+
         private readonly string csvFilePath = "Employee.csv";
+        public UploadDocumentsController(RabbitMqSenderService rabbitMqSenderService)
+        {
+            _rabbitMqSenderService = rabbitMqSenderService;
+        }
+
         [HttpPost("Upload-csvFile")]
         public IActionResult UploadCsv(IFormFile file)
         {
@@ -28,6 +36,7 @@ namespace Manage_Employee_Data.Controllers
                     {
                          Records = csv.GetRecords<EmployeeDataFromCSVfile>().ToList();
                     }
+                    _rabbitMqSenderService.SendMessage(Records);
                     return Ok(Records);
                 }
                 catch (IOException ex)

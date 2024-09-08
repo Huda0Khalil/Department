@@ -21,8 +21,9 @@ namespace Departments_Project.Handlers.EmployeeHandler
         {
             var employee = new Employee
             {
-                FirstName = request.FirstName,
-                LastName = request.LastName,
+                Name = request.Name,
+                PhoneNumber = request.PhoneNumber,
+                Age = request.Age,
                 Email = request.Email,
                 DepartmentId = request.DepartmentId
             };
@@ -33,8 +34,9 @@ namespace Departments_Project.Handlers.EmployeeHandler
         public async Task<Unit> Handle(UpdateEmployeeCommand request, CancellationToken cancellationToken)
         {
             var employee = await _repository.GetEmployeeByIdAsync(request.Id);
-            employee.FirstName = request.FirstName;
-            employee.LastName = request.LastName;
+            employee.Name = request.Name;
+            employee.Age = request.Age;
+            employee.PhoneNumber = request.PhoneNumber;
             employee.Email = request.Email;
             employee.DepartmentId = request.DepartmentId;
 

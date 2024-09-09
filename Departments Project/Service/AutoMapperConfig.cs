@@ -6,10 +6,13 @@ namespace Departments_Project.Service
     {
         public static IMapper? Mapper { get; private set; }
 
-        public static void Initialize()
+        public static void ConfigureMappings(IMapperConfigurationExpression config)
         {
-            var config = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>());
-            Mapper = config.CreateMapper();
+            // Add your profiles here
+            config.AddProfile<MappingProfile>();
+
+            // Alternatively, add multiple profiles
+            // config.AddProfiles(typeof(OtherProfile1), typeof(OtherProfile2));
         }
     }
 }

@@ -19,6 +19,12 @@ namespace Departments_Project.Repository.EmployeeRepository
             return employee.Id;
         }
 
+        public async Task<List<Employee>> AddListEmployeesAsync(List<Employee> Employees)
+        {
+            _context.Employees.AddRange(Employees);
+            await _context.SaveChangesAsync();
+            return Employees;
+        }
 
         public async Task DeleteEmployeeAsync(Employee employee)
         {

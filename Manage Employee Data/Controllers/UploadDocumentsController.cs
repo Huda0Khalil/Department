@@ -6,6 +6,7 @@ using System.Globalization;
 using Manage_Employee_Data.DTO;
 using System.Xml.Linq;
 using Manage_Employee_Data.Send;
+using Manage_Employee_Data.Producer;
 
 namespace Manage_Employee_Data.Controllers
 {
@@ -13,12 +14,12 @@ namespace Manage_Employee_Data.Controllers
     [ApiController]
     public class UploadDocumentsController : ControllerBase
     {
-        private readonly RabbitMqSenderService _rabbitMqSenderService;
+        private readonly IRabitMQProducer _rabbitMqProducer;
 
         private readonly string csvFilePath = "Employee.csv";
-        public UploadDocumentsController(RabbitMqSenderService rabbitMqSenderService)
+        public UploadDocumentsController(IRabitMQProducer rabbitMqProducer)
         {
-            _rabbitMqSenderService = rabbitMqSenderService;
+            this._rabbitMqProducer = rabbitMqProducer;
         }
 
         [HttpPost("Upload-csvFile")]
@@ -30,13 +31,13 @@ namespace Manage_Employee_Data.Controllers
             {
                 try
                 {
-                    List<EmployeeDataFromCSVfile> Records = new List<EmployeeDataFromCSVfile>();
+                    List<EmployeeDataFromCSVfile> Records ;
                     using (var reader = new StreamReader(file.OpenReadStream()))
                     using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)))
                     {
                          Records = csv.GetRecords<EmployeeDataFromCSVfile>().ToList();
                     }
-                    _rabbitMqSenderService.SendMessage(Records);
+                    _rabbitMqProducer.SendEmployeeMessage(Records);
                     return Ok(Records);
                 }
                 catch (IOException ex)

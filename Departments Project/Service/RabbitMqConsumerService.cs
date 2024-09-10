@@ -7,17 +7,21 @@ using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
+using AutoMapper;
 
 namespace Departments_Project.Service
 {
     public class RabbitMqConsumerService : BackgroundService
     {
+        private readonly  IMapper _mapper;
+
         private readonly IModel _channel;
         private readonly string _queueName = "EmployeeQueue";
         private readonly IServiceScopeFactory _serviceScopeFactory;
 
-        public RabbitMqConsumerService(IServiceScopeFactory serviceScopeFactory)
+        public RabbitMqConsumerService(IServiceScopeFactory serviceScopeFactory, IMapper Mapper)
         {
+            _mapper=Mapper;
             _serviceScopeFactory = serviceScopeFactory;
 
             var factory = new ConnectionFactory { HostName = "localhost" };
@@ -47,16 +51,17 @@ namespace Departments_Project.Service
                     {
                         var employeeRepository = scope.ServiceProvider.GetRequiredService<IEmployeeRepository>();
 
-                        List<EmployeeDataFromCSVfile> employeeDto = JsonConvert.DeserializeObject<List<EmployeeDataFromCSVfile>>(json);
+                        List<EmployeeDataFromCSVfile> employeeDto = JsonConvert.DeserializeObject<List<EmployeeDataFromCSVfile>>(json)??new List<EmployeeDataFromCSVfile>();
 
-                        List<Employee> employees = employeeDto.Select(empDto => new Employee
+                        var employees = _mapper.Map<List<Employee>>(employeeDto);
+                        /*List<Employee> employees = employeeDto.Select(empDto => new Employee
                         {
                             Age = empDto.Age,
                             Name = empDto.Name,
                             PhoneNumber = empDto.PhoneNumber,
                             Email = empDto.Email,
                             DepartmentId = empDto.DepartmentId
-                        }).ToList();
+                        }).ToList();*/
 
                         await employeeRepository.AddListEmployeesAsync(employees);
 

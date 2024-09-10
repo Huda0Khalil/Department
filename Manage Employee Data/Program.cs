@@ -1,5 +1,4 @@
 using Manage_Employee_Data.Producer;
-using Manage_Employee_Data.Send;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

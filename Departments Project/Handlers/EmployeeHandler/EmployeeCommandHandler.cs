@@ -8,7 +8,6 @@ namespace Departments_Project.Handlers.EmployeeHandler
 {
     public class EmployeeCommandHandler :
         IRequestHandler<CreateEmployeeCommand, int>,
-        IRequestHandler<AddListEmployee,List<Employee>>,
         IRequestHandler<UpdateEmployeeCommand, Unit>,
         IRequestHandler<DeleteEmployeeCommand, Unit>
     {
@@ -53,12 +52,7 @@ namespace Departments_Project.Handlers.EmployeeHandler
             return Unit.Value;
         }
 
-        public Task<List<Employee>> Handle(AddListEmployee request, CancellationToken cancellationToken)
-        {
-            return _repository.AddListEmployeesAsync(request.Employees);
-
-            //throw new NotImplementedException();
-        }
+       
     }
 
 }

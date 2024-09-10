@@ -4,7 +4,6 @@ using Departments_Project.CQRS.Query;
 using Departments_Project.CQRS.Query.EmployeeQuery;
 using Departments_Project.Entities;
 using Departments_Project.Entities.DTO;
-using Departments_Project.Receiver;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,68 +17,25 @@ namespace Departments_Project.Controllers
     [ApiController]
     public class EmployeeController : ControllerBase
     {
-        private readonly IRabbitMqListenerService _rabbitMqListenerService;
         private readonly IMediator _mediator;
         private IMapper _mapper;
         public ApplicationDbContext Context { get; set; }
 
-        public EmployeeController(IMediator mediator,IRabbitMqListenerService rabbitMqListenerService, ApplicationDbContext context)
+        public EmployeeController(IMediator mediator)
         {
             _mediator = mediator;
-            _rabbitMqListenerService = rabbitMqListenerService;
-            Context = context;
 
         }
         [HttpPost]
+        [Route("AddEmployee")]
+
         public async Task<IActionResult> CreateEmployee(CreateEmployeeCommand Command)
         {
             var employeeId = await _mediator.Send(Command);
             return Ok(employeeId);
         }
-        [HttpGet]
-        /*public IActionResult GetEmployees() {
-            return RedirectToAction("AddListEmployee",{AddListEmployee Command);
-        }*/
-        [HttpGet]
-        [Route("AddListEmployees")]
-        public async Task<IActionResult> AddEmployeesfromSender()
-        {
-            
-            var message = _rabbitMqListenerService.ReceiveMessage();
-            if (string.IsNullOrEmpty(message))
-            {
-                return NotFound("No messages in the queue.");
-            }
-
-            // Deserialize the message into a list of employees
-            var employeesData = JsonConvert.DeserializeObject<List<EmployeeDataFromCSVfile>>(message);
-
-            // Map EmployeeDataFromCSVfile to Employee entity
-            List<Employee> employees = new List<Employee>() ;
-            if(employeesData != null) {
-                foreach (var employeeData in employeesData)
-                {
-                    var employee = new Employee
-                    {
-                        Name = employeeData.Name,
-                        Email = employeeData.Email,
-                        PhoneNumber = employeeData.PhoneNumber,
-                        Age = employeeData.Age,
-                        DepartmentId = employeeData.DepartmentId
-                    };
-                    employees.Add(employee);
-                }
-            }
-            // employees = _mapper.Map<List<Employee>>(employeeData);
-            AddListEmployee Command = new AddListEmployee{ Employees = employees};
-            var x = await _mediator.Send(Command);
-            // Add employees to the database
-            //Context.Employees.AddRange(employees);
-            //await Context.SaveChangesAsync();
-
-            return Ok($"{employees.Count} employees added to the database.");
-        }
-
+        
+       
         [HttpGet]
         [Route("GetAllEmployees")]
         public async Task<IActionResult> GetAllEmployees()

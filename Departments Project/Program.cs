@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Departments_Project.Repository.DepartmentRepository;
-using Departments_Project.Receiver;
 using Departments_Project.Service;
 using Microsoft.Win32;
 
@@ -26,7 +25,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Progr
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddTransient<IDepartmentRepository, DepartmentRepository>();
 /// Register AutoMapper and scan for profiles in the specified assembly or all assemblies
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddAutoMapper(typeof(Program));
 //builder.Services.AddSingleton<IRabbitMqListenerService, RabbitMqListenerService>();
 builder.Services.AddHostedService<RabbitMqConsumerService>();
 

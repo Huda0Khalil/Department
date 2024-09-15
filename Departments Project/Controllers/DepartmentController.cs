@@ -5,11 +5,14 @@ using Departments_Project.Entities;
 using Departments_Project.Entities.DTO;
 using Departments_Project.Repository.DepartmentRepository;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Departments_Project.Controllers
 {
+    [Authorize]
+
     [Route("api/[controller]")]
     [ApiController]
     public class DepartmentController : ControllerBase

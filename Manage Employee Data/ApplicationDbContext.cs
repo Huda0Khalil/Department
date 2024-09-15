@@ -1,8 +1,7 @@
-﻿using Departments_Project.Entities;
+﻿using Manage_Employee_Data.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-
-namespace Departments_Project
+namespace Manage_Employee_Data
 {
     public class ApplicationDbContext : IdentityDbContext<User>
     {
@@ -11,16 +10,9 @@ namespace Departments_Project
         {
 
         }
-        public DbSet<Department> Departments { get; set; }
-        public DbSet<Employee> Employees { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Employee>()
-                .HasOne(e => e.Department)
-                .WithMany(d => d.Employees)
-                .HasForeignKey(e => e.DepartmentId);
         }
-
     }
 }

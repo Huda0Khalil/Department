@@ -6,9 +6,11 @@ using System.Globalization;
 using Manage_Employee_Data.DTO;
 using System.Xml.Linq;
 using Manage_Employee_Data.Producer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Manage_Employee_Data.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UploadDocumentsController : ControllerBase
